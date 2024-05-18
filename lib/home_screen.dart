@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'profile_screen.dart';
+import 'story_detail_screen.dart';
+// Yeni eklenen dosya
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -150,23 +152,23 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: <Widget>[
-                  _buildStoryTile('Biyoinformatik',
+                  _buildStoryTile(context, 'Biyoinformatik',
                       'assets/images/21e5d95d540947a69e18bbc20ab0bedf1.png'),
-                  _buildStoryTile('Flutter',
+                  _buildStoryTile(context, 'Flutter',
                       'assets/images/0d533685c3b64bdf94dd74b5c8fe4d051.png'),
-                  _buildStoryTile('Nanoteknoloji',
+                  _buildStoryTile(context, 'Nanoteknoloji',
                       'assets/images/6b30182b20f144399d46ca377ff609411.png'),
-                  _buildStoryTile('Unity',
+                  _buildStoryTile(context, 'Unity',
                       'assets/images/A3dae15046ed450d9ddaaaaf46eb5faf1.png'),
-                  _buildStoryTile('C#',
+                  _buildStoryTile(context, 'C#',
                       'assets/images/9a47f3b6473b45fca35a13fa376e47871.png'),
-                  _buildStoryTile('Uzay Kolonizasyonu',
+                  _buildStoryTile(context, 'Uzay Kolonizasyonu',
                       'assets/images/Fa969a35a75545618150d3c84cadc2e31.png'),
-                  _buildStoryTile('Genetik',
+                  _buildStoryTile(context, 'Genetik',
                       'assets/images/Fa2b95f37f0a4509bbbd87addd5d08cc1.png'),
-                  _buildStoryTile('Kuantum Fiziği',
+                  _buildStoryTile(context, 'Kuantum Fiziği',
                       'assets/images/61371cb1497a45b0b17b4a5d93af59e41.png'),
-                  _buildStoryTile('Javascript',
+                  _buildStoryTile(context, 'Javascript',
                       'assets/images/410b2c9d7fe04cda9534eec2c0650dc81.png'),
                 ],
               ),
@@ -177,47 +179,57 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStoryTile(String title, String imagePath) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.25),
-                offset: Offset(0, 4),
-                blurRadius: 4,
+  Widget _buildStoryTile(BuildContext context, String title, String imagePath) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoryDetailScreen(title: title),
+          ),
+        );
+      },
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                  offset: Offset(0, 4),
+                  blurRadius: 4,
+                ),
+              ],
+              border: Border.all(
+                color: const Color.fromRGBO(0, 0, 0, 1),
+                width: 1,
               ),
-            ],
-            border: Border.all(
-              color: const Color.fromRGBO(0, 0, 0, 1),
-              width: 1,
-            ),
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
+              image: DecorationImage(
+                image: AssetImage(imagePath),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: 5,
-          left: 8,
-          right: 8,
-          child: Container(
-            color: Colors.black54,
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+          Positioned(
+            top: 5,
+            left: 8,
+            right: 8,
+            child: Container(
+              color: Colors.black54,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

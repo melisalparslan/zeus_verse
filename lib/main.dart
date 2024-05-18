@@ -4,6 +4,7 @@ import 'home_screen.dart';
 import 'login_screen.dart';
 import 'profile_screen.dart';
 import 'register_screen.dart';
+import 'story_detail_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/register': (context) => const RegisterScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/story': (context) =>
+            const StoryDetailScreen(title: ''), // Placeholder
       },
     );
   }
