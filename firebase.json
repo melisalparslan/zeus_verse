@@ -1,0 +1,22 @@
+{
+    "flutter": {
+        "platforms": {
+            "ios": {
+                "default": {
+                    "projectId": "zeusverse-3c6f3",
+                    "appId": "1:490612320342:ios:469b3b5ddd263ab97af3f7",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "zeusverse-3c6f3",
+                    "configurations": {
+                        "ios": "1:490612320342:ios:469b3b5ddd263ab97af3f7"
+                    }
+                }
+            }
+        }
+    }
+}
