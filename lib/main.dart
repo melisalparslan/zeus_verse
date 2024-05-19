@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'create_story_screen.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
-import 'profile_screen.dart';
-import 'register_screen.dart';
-import 'story_detail_screen.dart';
+import 'screens/create_story_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/register_screen.dart';
+import 'screens/story_detail_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

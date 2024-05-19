@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'profile_screen.dart';
 import 'story_detail_screen.dart';
+import '../data/admin_contents.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,30 +13,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
     final screenSize = MediaQuery.of(context).size;
-
-    final List<String> adminContents = [
-      '''Biyoinformatik, biyolojik verilerin toplanması, analizi ve yorumlanması için bilgi teknolojilerini kullanan bir bilim dalıdır. Bu alanda çalışan bilim insanları, genetik dizilimlerin analizinden protein yapılarının tahminine kadar çeşitli konularda çalışmalar yaparlar. Biyoinformatik, modern biyoloji ve tıp alanında büyük öneme sahiptir.''',
-      '''Flutter, Google tarafından geliştirilen açık kaynaklı bir mobil uygulama geliştirme framework'üdür. Flutter, tek bir kod tabanı ile hem iOS hem de Android uygulamaları oluşturmanıza olanak tanır. Hızlı geliştirme, zengin widget seti ve yüksek performans sunar.''',
-      '''Nanoteknoloji, atom ve molekül ölçeğinde maddelerin kontrol edilmesi ve manipüle edilmesiyle ilgilenen bir bilim dalıdır. Bu teknoloji, sağlık, elektronik, çevre ve enerji gibi birçok alanda devrim niteliğinde yenilikler sunmaktadır. Nanoteknoloji sayesinde daha güçlü malzemeler, daha küçük elektronik cihazlar ve daha etkili tıbbi tedaviler geliştirilmektedir.''',
-      '''Unity, video oyunları, simülasyonlar ve diğer interaktif deneyimler oluşturmak için kullanılan bir oyun motorudur. C# programlama dili ile kullanılır ve geniş bir platform desteği sunar.''',
-      '''C#, Microsoft tarafından geliştirilen modern, nesne yönelimli bir programlama dilidir. .NET Framework ile birlikte kullanılır ve geniş bir uygulama yelpazesi için uygundur, özellikle web, masaüstü ve mobil uygulamalar geliştirmek için tercih edilir.''',
-      '''Uzay kolonizasyonu, insanlığın dünya dışındaki gezegenlerde veya uydularda kalıcı olarak yaşama ve çalışma yeteneği kazanması sürecidir. Bu süreç, teknolojik, biyolojik ve sosyal birçok zorluğun üstesinden gelmeyi gerektirir.''',
-      '''Genetik, kalıtım ve varyasyonun biyolojik temellerini inceleyen bir bilim dalıdır. Genetik mühendisliği, DNA'nın değiştirilmesi ve yeni organizmaların yaratılması için genetik bilgiyi kullanır.''',
-      '''Kuantum fiziği, atom ve atom altı parçacıkların davranışlarını inceleyen bir fizik dalıdır. Kuantum bilgisayarları, geleneksel bilgisayarlardan çok daha hızlı işlem yapabilen cihazlardır.''',
-      '''Javascript, web geliştirme için kullanılan yaygın bir programlama dilidir. Hem istemci tarafında hem de sunucu tarafında kullanılabilir. HTML ve CSS ile birlikte çalışarak dinamik ve etkileşimli web sayfaları oluşturulmasına olanak tanır.''',
-    ];
-
-    final List<String> adminSubjects = [
-      'Biyoinformatik Öğreniyorum',
-      'Flutter',
-      'Nanoteknoloji',
-      'Unity',
-      'C#',
-      'Uzay Kolonizasyonu',
-      'Genetik',
-      'Kuantum Fiziği',
-      'Javascript',
-    ];
 
     return Scaffold(
       body: Container(

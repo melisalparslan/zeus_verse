@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'api_service.dart'; // ApiService'i içe aktar
+import '../services/api_service.dart'; // ApiService'i içe aktar
 
 class StoryDetailScreen extends StatefulWidget {
   final String title;
