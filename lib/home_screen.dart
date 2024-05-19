@@ -13,6 +13,30 @@ class HomeScreen extends StatelessWidget {
     final User? user = FirebaseAuth.instance.currentUser;
     final screenSize = MediaQuery.of(context).size;
 
+    final List<String> adminContents = [
+      '''Biyoinformatik, biyolojik verilerin toplanması, analizi ve yorumlanması için bilgi teknolojilerini kullanan bir bilim dalıdır. Bu alanda çalışan bilim insanları, genetik dizilimlerin analizinden protein yapılarının tahminine kadar çeşitli konularda çalışmalar yaparlar. Biyoinformatik, modern biyoloji ve tıp alanında büyük öneme sahiptir.''',
+      '''Flutter, Google tarafından geliştirilen açık kaynaklı bir mobil uygulama geliştirme framework'üdür. Flutter, tek bir kod tabanı ile hem iOS hem de Android uygulamaları oluşturmanıza olanak tanır. Hızlı geliştirme, zengin widget seti ve yüksek performans sunar.''',
+      '''Nanoteknoloji, atom ve molekül ölçeğinde maddelerin kontrol edilmesi ve manipüle edilmesiyle ilgilenen bir bilim dalıdır. Bu teknoloji, sağlık, elektronik, çevre ve enerji gibi birçok alanda devrim niteliğinde yenilikler sunmaktadır. Nanoteknoloji sayesinde daha güçlü malzemeler, daha küçük elektronik cihazlar ve daha etkili tıbbi tedaviler geliştirilmektedir.''',
+      '''Unity, video oyunları, simülasyonlar ve diğer interaktif deneyimler oluşturmak için kullanılan bir oyun motorudur. C# programlama dili ile kullanılır ve geniş bir platform desteği sunar.''',
+      '''C#, Microsoft tarafından geliştirilen modern, nesne yönelimli bir programlama dilidir. .NET Framework ile birlikte kullanılır ve geniş bir uygulama yelpazesi için uygundur, özellikle web, masaüstü ve mobil uygulamalar geliştirmek için tercih edilir.''',
+      '''Uzay kolonizasyonu, insanlığın dünya dışındaki gezegenlerde veya uydularda kalıcı olarak yaşama ve çalışma yeteneği kazanması sürecidir. Bu süreç, teknolojik, biyolojik ve sosyal birçok zorluğun üstesinden gelmeyi gerektirir.''',
+      '''Genetik, kalıtım ve varyasyonun biyolojik temellerini inceleyen bir bilim dalıdır. Genetik mühendisliği, DNA'nın değiştirilmesi ve yeni organizmaların yaratılması için genetik bilgiyi kullanır.''',
+      '''Kuantum fiziği, atom ve atom altı parçacıkların davranışlarını inceleyen bir fizik dalıdır. Kuantum bilgisayarları, geleneksel bilgisayarlardan çok daha hızlı işlem yapabilen cihazlardır.''',
+      '''Javascript, web geliştirme için kullanılan yaygın bir programlama dilidir. Hem istemci tarafında hem de sunucu tarafında kullanılabilir. HTML ve CSS ile birlikte çalışarak dinamik ve etkileşimli web sayfaları oluşturulmasına olanak tanır.''',
+    ];
+
+    final List<String> adminSubjects = [
+      'Biyoinformatik Öğreniyorum',
+      'Flutter',
+      'Nanoteknoloji',
+      'Unity',
+      'C#',
+      'Uzay Kolonizasyonu',
+      'Genetik',
+      'Kuantum Fiziği',
+      'Javascript',
+    ];
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -167,10 +191,9 @@ class HomeScreen extends StatelessWidget {
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
-                    itemCount: stories.length +
-                        9, // 9 sabit hikaye + dinamik hikayeler
+                    itemCount: stories.length + adminContents.length,
                     itemBuilder: (context, index) {
-                      if (index < 9) {
+                      if (index < adminContents.length) {
                         // Sabit hikayeler
                         var titles = [
                           'Biyoinformatik',
@@ -195,14 +218,16 @@ class HomeScreen extends StatelessWidget {
                           'assets/images/410b2c9d7fe04cda9534eec2c0650dc81.png',
                         ];
                         return _buildStoryTile(
-                            context,
-                            titles[index],
-                            images[index],
-                            'Admin',
-                            'Zeus, antik Yunan\'daki tanrıların tanrısı, dünyada teknolojinin yükselişini fark ederek insanlarla yeni bir iletişim yolu bulmak istedi. Zeus, oğluna dönerek, "Apollo, dünyada neler olup bittiğini görüyorum. İnsanlar artık tanrılarla eskisi gibi konuşmuyor. Onlarla iletişim kurmanın yeni yollarını bulmalıyız. Bana bu yeni dünyayı öğret," dedi. Zeus oğlu Apollo\'nun yardımıyla Flutter\'ı öğretmeye başladı. İlk adım olarak, Zeus\'a Dart dilini gösterdi. Zeus, kod yazmayı, ikinci adım olarak, Flutter Flow\'u kullanmayı öğrendi. Flutter Flow, kodsuz veya az kodlu bir platform olarak Zeus\'un hızlıca uygulama geliştirmesine yardımcı oldu. Zeus, tanrılarla insanların bağlantısını yeniden kurmak için "Olympus Connect" adlı bir mobil uygulama geliştirdi. Zeus, uygulamayı geliştirirken, Flutter Flow\'un sürükle-bırak arayüzünü kullanarak tasarım ve işlevselliği bir araya getirdi. Apollo, müzik ve görsellerle uygulamayı zenginleştirdi. Athena, bilgeliğiyle uygulamanın içeriklerini düzenledi. Hermes, mesajlaşma ve iletişim özelliklerini ekledi. Hera, kullanıcılara ailevi bağları ve sevgiyi hatırlatan özellikler sundu. Olympus Connect hızla popüler oldu ve tanrılar, dijital dünyada da insanlarla bağlarını güçlendirdi. Böylece, Zeus ve tanrıları teknolojinin gücüyle yeni bir çağ açtılar.');
+                          context,
+                          titles[index],
+                          images[index],
+                          'Admin',
+                          adminContents[index],
+                          adminSubjects[index],
+                        );
                       } else {
                         // Dinamik hikayeler
-                        var story = stories[index - 9];
+                        var story = stories[index - adminContents.length];
                         return FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance
                               .collection('users')
@@ -228,6 +253,7 @@ class HomeScreen extends StatelessWidget {
                               story['image'],
                               username, // userId yerine username'i kullan
                               story['content'],
+                              story['subject'], // title as subject
                             );
                           },
                         );
@@ -244,18 +270,20 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildStoryTile(BuildContext context, String title, String imagePath,
-      String author, String content) {
+      String author, String content, String subject) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => StoryDetailScreen(
-                title: title,
-                imagePath: imagePath,
-                author: author,
-                content: content,
-                isAdmin: author == 'Admin'),
+              title: title,
+              subject: subject, // Konu başlığı
+              imagePath: imagePath,
+              author: author,
+              content: content,
+              isAdmin: author == 'Admin',
+            ),
           ),
         );
       },

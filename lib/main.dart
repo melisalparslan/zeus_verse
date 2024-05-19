@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
               imagePath: '',
               content: '',
               author: '',
+              subject: '',
             ),
         '/createStory': (context) =>
             const CreateStoryScreen(), // Yeni rotayı ekliyoruz

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
@@ -30,21 +29,51 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? _imageFile;
+  String? _selectedImagePath;
+
+  final List<String> _assetsImages = [
+    'assets/images/41.png',
+    'assets/images/Up1.png',
+    'assets/images/images.jpeg',
+    // Daha fazla resim ekleyebilirsiniz.
+  ];
 
   @override
   void initState() {
     super.initState();
     _bioController.text = widget.bio;
+    _selectedImagePath = widget.photoUrl;
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = File(pickedFile.path);
-      }
-    });
+  Future<void> _pickImageFromAssets() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Bir Resim Seçin',
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: const Color.fromRGBO(13, 64, 93, 1),
+          content: SingleChildScrollView(
+            child: Column(
+              children: _assetsImages.map((imagePath) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedImagePath = imagePath;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Image.asset(imagePath, height: 100),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<String> _uploadImage(File imageFile) async {
@@ -57,7 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _saveProfile() async {
     User? user = _auth.currentUser;
-    String? photoUrl = widget.photoUrl;
+    String? photoUrl = _selectedImagePath;
 
     if (_imageFile != null && user != null) {
       photoUrl = await _uploadImage(_imageFile!);
@@ -102,14 +131,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: <Widget>[
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: _pickImage,
+                onTap: _pickImageFromAssets,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _imageFile == null
-                      ? (widget.photoUrl.startsWith('assets/')
-                          ? AssetImage(widget.photoUrl)
-                          : NetworkImage(widget.photoUrl)) as ImageProvider
-                      : FileImage(_imageFile!),
+                  backgroundImage: _imageFile != null
+                      ? FileImage(_imageFile!)
+                      : (_selectedImagePath != null
+                          ? (_selectedImagePath!.startsWith('assets/')
+                                  ? AssetImage(_selectedImagePath!)
+                                  : NetworkImage(_selectedImagePath!))
+                              as ImageProvider
+                          : const AssetImage('assets/images/default.png')),
                 ),
               ),
               const SizedBox(height: 20),

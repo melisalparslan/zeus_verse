@@ -308,6 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       initialTitle: doc['title'],
                                       initialContent: doc['content'],
                                       initialImagePath: doc['image'],
+                                      initialSubject: doc['subject'],
                                     ),
                                   ),
                                 );

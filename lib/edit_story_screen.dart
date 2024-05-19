@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class EditStoryScreen extends StatefulWidget {
   final String storyId;
   final String initialTitle;
+  final String initialSubject; // Konu başlığı
   final String initialContent;
   final String initialImagePath;
 
@@ -13,6 +14,7 @@ class EditStoryScreen extends StatefulWidget {
     super.key,
     required this.storyId,
     required this.initialTitle,
+    required this.initialSubject, // Konu başlığı
     required this.initialContent,
     required this.initialImagePath,
   });
@@ -23,6 +25,7 @@ class EditStoryScreen extends StatefulWidget {
 
 class _EditStoryScreenState extends State<EditStoryScreen> {
   late TextEditingController _titleController;
+  late TextEditingController _subjectController; // Konu başlığı kontrolcüsü
   late TextEditingController _contentController;
   late String _selectedImagePath;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -31,6 +34,8 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.initialTitle);
+    _subjectController =
+        TextEditingController(text: widget.initialSubject); // Konu başlığı
     _contentController = TextEditingController(text: widget.initialContent);
     _selectedImagePath = widget.initialImagePath;
   }
@@ -74,7 +79,9 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
   }
 
   Future<void> _saveStory() async {
-    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+    if (_titleController.text.isEmpty ||
+        _subjectController.text.isEmpty || // Konu başlığı kontrolü
+        _contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
       );
@@ -84,6 +91,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
     try {
       await _firestore.collection('stories').doc(widget.storyId).update({
         'title': _titleController.text,
+        'subject': _subjectController.text, // Konu başlığı kaydediliyor
         'content': _contentController.text,
         'image': _selectedImagePath,
         'timestamp': FieldValue.serverTimestamp(),
@@ -150,6 +158,20 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: 'Başlık (En fazla 2 kelime)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.white24,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _subjectController, // Konu başlığı için TextField
+                decoration: const InputDecoration(
+                  labelText: 'Konu Başlığı',
                   labelStyle: TextStyle(color: Colors.white),
                   filled: true,
                   fillColor: Colors.white24,

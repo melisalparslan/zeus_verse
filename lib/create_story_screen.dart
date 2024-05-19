@@ -11,6 +11,8 @@ class CreateStoryScreen extends StatefulWidget {
 
 class _CreateStoryScreenState extends State<CreateStoryScreen> {
   final _titleController = TextEditingController();
+  final _subjectController =
+      TextEditingController(); // Konu başlığı kontrolcüsü
   final _contentController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -25,6 +27,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
   Future<void> _saveStory() async {
     if (_titleController.text.isEmpty ||
+        _subjectController.text.isEmpty || // Konu başlığı kontrolü
         _contentController.text.isEmpty ||
         _selectedImagePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,6 +42,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
       await _firestore.collection('stories').add({
         'title': _titleController.text,
+        'subject': _subjectController.text, // Konu başlığı kaydediliyor
         'content': _contentController.text,
         'image': _selectedImagePath,
         'userId': user!.uid,
@@ -125,6 +129,20 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: 'Başlık (En fazla 2 kelime)',
+                  labelStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.white24,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _subjectController, // Konu başlığı için TextField
+                decoration: const InputDecoration(
+                  labelText: 'Konu Başlığı',
                   labelStyle: TextStyle(color: Colors.white),
                   filled: true,
                   fillColor: Colors.white24,
