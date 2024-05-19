@@ -104,7 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 20),
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage(photoUrl),
+                      backgroundImage: photoUrl.startsWith('assets/')
+                          ? AssetImage(photoUrl)
+                          : NetworkImage(photoUrl) as ImageProvider,
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -130,113 +132,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              '465',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Sahitya',
-                                fontSize: 36,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            Text(
-                              'Okunan Hikaye',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color.fromRGBO(148, 148, 148, 1),
-                                fontFamily: 'Sahitya',
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              '8.7/10',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Sahitya',
-                                fontSize: 36,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            Text(
-                              'Yazar Puanı',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color.fromRGBO(148, 148, 148, 1),
-                                fontFamily: 'Sahitya',
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              '1.2k',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Sahitya',
-                                fontSize: 36,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            Text(
-                              'Beğeniler',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color.fromRGBO(148, 148, 148, 1),
-                                fontFamily: 'Sahitya',
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    _buildStatsRow(),
                     const SizedBox(height: 20),
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: Colors.white,
-                            thickness: 1,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            'FAVORİ KONULARIM',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Righteous',
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: Colors.white,
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildDivider('FAVORİ KONULARIM'),
                     const SizedBox(height: 20),
                     Wrap(
                       spacing: 20,
@@ -251,35 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: Colors.white,
-                            thickness: 1,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            'HİKAYELERİM',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Righteous',
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: Colors.white,
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildDivider('HİKAYELERİM'),
                     const SizedBox(height: 20),
                     StreamBuilder<QuerySnapshot>(
                       stream: _getUserStories(),
@@ -373,6 +243,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             height: 94,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(0, 2),
+                  blurRadius: 6,
+                ),
+              ],
               image: DecorationImage(
                 image: imagePath.startsWith('assets/')
                     ? AssetImage(imagePath)
@@ -403,17 +280,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTextContainer(String text) {
-    return Text(
-      text,
-      textAlign: TextAlign.left,
-      style: const TextStyle(
-        color: Colors.white,
-        fontFamily: 'Sahitya',
-        fontSize: 20,
-        fontWeight: FontWeight.normal,
-        height: 1.2,
-      ),
+  Widget _buildStatsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildStatsColumn('465', 'Okunan Hikaye'),
+        _buildStatsColumn('8.7/10', 'Yazar Puanı'),
+        _buildStatsColumn('1.2k', 'Beğeniler'),
+      ],
+    );
+  }
+
+  Widget _buildStatsColumn(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'Sahitya',
+            fontSize: 36,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Color.fromRGBO(148, 148, 148, 1),
+            fontFamily: 'Sahitya',
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider(String text) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Divider(
+            color: Colors.white,
+            thickness: 1,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontFamily: 'Righteous',
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+              height: 1.5,
+            ),
+          ),
+        ),
+        const Expanded(
+          child: Divider(
+            color: Colors.white,
+            thickness: 1,
+          ),
+        ),
+      ],
     );
   }
 }

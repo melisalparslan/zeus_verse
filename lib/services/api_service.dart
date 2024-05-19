@@ -77,7 +77,8 @@ class ApiService {
     }
   }
 
-  static Future<String> checkAnswer(String question, String userAnswer) async {
+  static Future<String> checkAnswer(
+      String question, String userAnswer, String storyContent) async {
     if (apiKey.isEmpty) {
       return 'API_KEY not found';
     }
@@ -91,7 +92,7 @@ class ApiService {
           'parts': [
             {
               'text':
-                  'Soru: $question \nKullanıcı Cevabı: $userAnswer. Bu cevap doğru mu?'
+                  'Soru: $question \nKullanıcı Cevabı: $userAnswer. Bu cevap doğru mu? \nHikaye: $storyContent'
             }
           ]
         }

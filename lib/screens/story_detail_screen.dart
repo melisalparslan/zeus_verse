@@ -203,8 +203,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
                     final question = await _testQuestionFuture!;
                     final answer = _testAnswerController.text;
-                    final result =
-                        await ApiService.checkAnswer(question, answer);
+                    final result = await ApiService.checkAnswer(
+                        question, answer, widget.content);
 
                     // Bekleme animasyonunu kapat
                     Navigator.of(context).pop();

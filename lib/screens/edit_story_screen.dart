@@ -1,12 +1,10 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditStoryScreen extends StatefulWidget {
   final String storyId;
   final String initialTitle;
-  final String initialSubject; // Konu başlığı
+  final String initialSubject;
   final String initialContent;
   final String initialImagePath;
 
@@ -14,7 +12,7 @@ class EditStoryScreen extends StatefulWidget {
     super.key,
     required this.storyId,
     required this.initialTitle,
-    required this.initialSubject, // Konu başlığı
+    required this.initialSubject,
     required this.initialContent,
     required this.initialImagePath,
   });
@@ -25,7 +23,7 @@ class EditStoryScreen extends StatefulWidget {
 
 class _EditStoryScreenState extends State<EditStoryScreen> {
   late TextEditingController _titleController;
-  late TextEditingController _subjectController; // Konu başlığı kontrolcüsü
+  late TextEditingController _subjectController;
   late TextEditingController _contentController;
   late String _selectedImagePath;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -34,8 +32,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.initialTitle);
-    _subjectController =
-        TextEditingController(text: widget.initialSubject); // Konu başlığı
+    _subjectController = TextEditingController(text: widget.initialSubject);
     _contentController = TextEditingController(text: widget.initialContent);
     _selectedImagePath = widget.initialImagePath;
   }
@@ -80,7 +77,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
 
   Future<void> _saveStory() async {
     if (_titleController.text.isEmpty ||
-        _subjectController.text.isEmpty || // Konu başlığı kontrolü
+        _subjectController.text.isEmpty ||
         _contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
@@ -91,7 +88,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
     try {
       await _firestore.collection('stories').doc(widget.storyId).update({
         'title': _titleController.text,
-        'subject': _subjectController.text, // Konu başlığı kaydediliyor
+        'subject': _subjectController.text,
         'content': _contentController.text,
         'image': _selectedImagePath,
         'timestamp': FieldValue.serverTimestamp(),
@@ -107,6 +104,57 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
         SnackBar(content: Text('Hikaye güncellenirken bir hata oluştu: $e')),
       );
     }
+  }
+
+  Widget _buildImagePicker() {
+    return GestureDetector(
+      onTap: _selectImage,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: _selectedImagePath.isNotEmpty
+            ? AssetImage(_selectedImagePath)
+            : const AssetImage('assets/images/placeholder.png'),
+        child: _selectedImagePath.isEmpty
+            ? const Icon(
+                Icons.add_a_photo,
+                color: Colors.black,
+                size: 30,
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.white24,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+      ),
+      style: const TextStyle(color: Colors.white),
+      maxLines: maxLines,
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: _saveStory,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        child: const Text('Kaydet'),
+      ),
+    );
   }
 
   @override
@@ -137,83 +185,15 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: _selectImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _selectedImagePath != null
-                      ? AssetImage(_selectedImagePath)
-                      : const AssetImage('assets/images/placeholder.png'),
-                  child: _selectedImagePath == null
-                      ? const Icon(
-                          Icons.add_a_photo,
-                          color: Colors.black,
-                          size: 30,
-                        )
-                      : null,
-                ),
-              ),
+              _buildImagePicker(),
               const SizedBox(height: 20),
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Başlık (En fazla 2 kelime)',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_titleController, 'Başlık (En fazla 2 kelime)'),
               const SizedBox(height: 20),
-              TextField(
-                controller: _subjectController, // Konu başlığı için TextField
-                decoration: const InputDecoration(
-                  labelText: 'Konu Başlığı',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_subjectController, 'Konu Başlığı'),
               const SizedBox(height: 20),
-              TextField(
-                controller: _contentController,
-                decoration: const InputDecoration(
-                  labelText: 'Hikaye',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                maxLines: 5,
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_contentController, 'Hikaye', maxLines: 5),
               const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveStory,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 15,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Kaydet'),
-                ),
-              ),
+              _buildSaveButton(),
             ],
           ),
         ),

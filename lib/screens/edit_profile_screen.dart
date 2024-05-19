@@ -19,7 +19,6 @@ class EditProfileScreen extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
@@ -103,6 +102,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Widget _buildProfileImage() {
+    return GestureDetector(
+      onTap: _pickImageFromAssets,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: _imageFile != null
+            ? FileImage(_imageFile!)
+            : (_selectedImagePath != null
+                ? (_selectedImagePath!.startsWith('assets/')
+                    ? AssetImage(_selectedImagePath!)
+                    : NetworkImage(_selectedImagePath!)) as ImageProvider
+                : const AssetImage('assets/images/default.png')),
+      ),
+    );
+  }
+
+  Widget _buildBioTextField() {
+    return TextField(
+      controller: _bioController,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.1),
+        hintStyle: const TextStyle(color: Colors.white70),
+        labelStyle: const TextStyle(color: Colors.white),
+      ),
+      maxLines: 3,
+      style: const TextStyle(color: Colors.white),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return ElevatedButton(
+      onPressed: _saveProfile,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      child: const Text('Kaydet'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,20 +175,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             children: <Widget>[
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: _pickImageFromAssets,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!)
-                      : (_selectedImagePath != null
-                          ? (_selectedImagePath!.startsWith('assets/')
-                                  ? AssetImage(_selectedImagePath!)
-                                  : NetworkImage(_selectedImagePath!))
-                              as ImageProvider
-                          : const AssetImage('assets/images/default.png')),
-                ),
-              ),
+              _buildProfileImage(),
               const SizedBox(height: 20),
               Text(
                 widget.username,
@@ -166,37 +198,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _bioController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.1),
-                  hintStyle: const TextStyle(color: Colors.white70),
-                  labelStyle: const TextStyle(color: Colors.white),
-                ),
-                maxLines: 3,
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildBioTextField(),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 15,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                child: const Text('Kaydet'),
-              ),
+              _buildSaveButton(),
             ],
           ),
         ),

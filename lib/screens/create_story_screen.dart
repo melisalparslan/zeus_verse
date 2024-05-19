@@ -11,8 +11,7 @@ class CreateStoryScreen extends StatefulWidget {
 
 class _CreateStoryScreenState extends State<CreateStoryScreen> {
   final _titleController = TextEditingController();
-  final _subjectController =
-      TextEditingController(); // Konu başlığı kontrolcüsü
+  final _subjectController = TextEditingController();
   final _contentController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -27,7 +26,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
   Future<void> _saveStory() async {
     if (_titleController.text.isEmpty ||
-        _subjectController.text.isEmpty || // Konu başlığı kontrolü
+        _subjectController.text.isEmpty ||
         _contentController.text.isEmpty ||
         _selectedImagePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -42,7 +41,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
       await _firestore.collection('stories').add({
         'title': _titleController.text,
-        'subject': _subjectController.text, // Konu başlığı kaydediliyor
+        'subject': _subjectController.text,
         'content': _contentController.text,
         'image': _selectedImagePath,
         'userId': user!.uid,
@@ -59,6 +58,81 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
         SnackBar(content: Text('Hikaye oluşturulurken bir hata oluştu: $e')),
       );
     }
+  }
+
+  Widget _buildImagePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Text(
+          'Bir Resim Seçin',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: _images.map((imagePath) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedImagePath = imagePath;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: _selectedImagePath == imagePath
+                          ? Colors.blue
+                          : Colors.transparent,
+                      width: 3,
+                    ),
+                  ),
+                  child: Image.asset(imagePath, height: 100),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.white24,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+      ),
+      style: const TextStyle(color: Colors.white),
+      maxLines: maxLines,
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Center(
+      child: ElevatedButton(
+        onPressed: _saveStory,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        child: const Text('Kaydet'),
+      ),
+    );
   }
 
   @override
@@ -89,102 +163,15 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 20),
-              const Text(
-                'Bir Resim Seçin',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _images.map((imagePath) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedImagePath = imagePath;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: _selectedImagePath == imagePath
-                                ? Colors.blue
-                                : Colors.transparent,
-                            width: 3,
-                          ),
-                        ),
-                        child: Image.asset(imagePath, height: 100),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
+              _buildImagePicker(),
               const SizedBox(height: 20),
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Başlık (En fazla 2 kelime)',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_titleController, 'Başlık (En fazla 2 kelime)'),
               const SizedBox(height: 20),
-              TextField(
-                controller: _subjectController, // Konu başlığı için TextField
-                decoration: const InputDecoration(
-                  labelText: 'Konu Başlığı',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_subjectController, 'Konu Başlığı'),
               const SizedBox(height: 20),
-              TextField(
-                controller: _contentController,
-                decoration: const InputDecoration(
-                  labelText: 'Hikaye',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                ),
-                maxLines: 5,
-                style: const TextStyle(color: Colors.white),
-              ),
+              _buildTextField(_contentController, 'Hikaye', maxLines: 5),
               const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _saveStory,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 15,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Kaydet'),
-                ),
-              ),
+              _buildSaveButton(),
             ],
           ),
         ),
