@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'create_story_screen.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 import 'profile_screen.dart';
@@ -30,8 +31,14 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/register': (context) => const RegisterScreen(),
         '/profile': (context) => const ProfileScreen(),
-        '/story': (context) =>
-            const StoryDetailScreen(title: ''), // Placeholder
+        '/story': (context) => const StoryDetailScreen(
+              title: '',
+              imagePath: '',
+              content: '',
+              author: '',
+            ),
+        '/createStory': (context) =>
+            const CreateStoryScreen(), // Yeni rotayı ekliyoruz
       },
     );
   }

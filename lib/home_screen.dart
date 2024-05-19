@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'profile_screen.dart';
 import 'story_detail_screen.dart';
-// Yeni eklenen dosya
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -147,30 +146,95 @@ class HomeScreen extends StatelessWidget {
               left: 18,
               right: 18,
               bottom: 18,
-              child: GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: <Widget>[
-                  _buildStoryTile(context, 'Biyoinformatik',
-                      'assets/images/21e5d95d540947a69e18bbc20ab0bedf1.png'),
-                  _buildStoryTile(context, 'Flutter',
-                      'assets/images/0d533685c3b64bdf94dd74b5c8fe4d051.png'),
-                  _buildStoryTile(context, 'Nanoteknoloji',
-                      'assets/images/6b30182b20f144399d46ca377ff609411.png'),
-                  _buildStoryTile(context, 'Unity',
-                      'assets/images/A3dae15046ed450d9ddaaaaf46eb5faf1.png'),
-                  _buildStoryTile(context, 'C#',
-                      'assets/images/9a47f3b6473b45fca35a13fa376e47871.png'),
-                  _buildStoryTile(context, 'Uzay Kolonizasyonu',
-                      'assets/images/Fa969a35a75545618150d3c84cadc2e31.png'),
-                  _buildStoryTile(context, 'Genetik',
-                      'assets/images/Fa2b95f37f0a4509bbbd87addd5d08cc1.png'),
-                  _buildStoryTile(context, 'Kuantum Fiziği',
-                      'assets/images/61371cb1497a45b0b17b4a5d93af59e41.png'),
-                  _buildStoryTile(context, 'Javascript',
-                      'assets/images/410b2c9d7fe04cda9534eec2c0650dc81.png'),
-                ],
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('stories')
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  var stories = snapshot.data!.docs;
+
+                  return GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: stories.length +
+                        9, // 9 sabit hikaye + dinamik hikayeler
+                    itemBuilder: (context, index) {
+                      if (index < 9) {
+                        // Sabit hikayeler
+                        var titles = [
+                          'Biyoinformatik',
+                          'Flutter',
+                          'Nanoteknoloji',
+                          'Unity',
+                          'C#',
+                          'Uzay Kolonizasyonu',
+                          'Genetik',
+                          'Kuantum Fiziği',
+                          'Javascript',
+                        ];
+                        var images = [
+                          'assets/images/21e5d95d540947a69e18bbc20ab0bedf1.png',
+                          'assets/images/0d533685c3b64bdf94dd74b5c8fe4d051.png',
+                          'assets/images/6b30182b20f144399d46ca377ff609411.png',
+                          'assets/images/A3dae15046ed450d9ddaaaaf46eb5faf1.png',
+                          'assets/images/9a47f3b6473b45fca35a13fa376e47871.png',
+                          'assets/images/Fa969a35a75545618150d3c84cadc2e31.png',
+                          'assets/images/Fa2b95f37f0a4509bbbd87addd5d08cc1.png',
+                          'assets/images/61371cb1497a45b0b17b4a5d93af59e41.png',
+                          'assets/images/410b2c9d7fe04cda9534eec2c0650dc81.png',
+                        ];
+                        return _buildStoryTile(
+                            context,
+                            titles[index],
+                            images[index],
+                            'Admin',
+                            'Zeus, antik Yunan\'daki tanrıların tanrısı, dünyada teknolojinin yükselişini fark ederek insanlarla yeni bir iletişim yolu bulmak istedi. Zeus, oğluna dönerek, "Apollo, dünyada neler olup bittiğini görüyorum. İnsanlar artık tanrılarla eskisi gibi konuşmuyor. Onlarla iletişim kurmanın yeni yollarını bulmalıyız. Bana bu yeni dünyayı öğret," dedi. Zeus oğlu Apollo\'nun yardımıyla Flutter\'ı öğretmeye başladı. İlk adım olarak, Zeus\'a Dart dilini gösterdi. Zeus, kod yazmayı, ikinci adım olarak, Flutter Flow\'u kullanmayı öğrendi. Flutter Flow, kodsuz veya az kodlu bir platform olarak Zeus\'un hızlıca uygulama geliştirmesine yardımcı oldu. Zeus, tanrılarla insanların bağlantısını yeniden kurmak için "Olympus Connect" adlı bir mobil uygulama geliştirdi. Zeus, uygulamayı geliştirirken, Flutter Flow\'un sürükle-bırak arayüzünü kullanarak tasarım ve işlevselliği bir araya getirdi. Apollo, müzik ve görsellerle uygulamayı zenginleştirdi. Athena, bilgeliğiyle uygulamanın içeriklerini düzenledi. Hermes, mesajlaşma ve iletişim özelliklerini ekledi. Hera, kullanıcılara ailevi bağları ve sevgiyi hatırlatan özellikler sundu. Olympus Connect hızla popüler oldu ve tanrılar, dijital dünyada da insanlarla bağlarını güçlendirdi. Böylece, Zeus ve tanrıları teknolojinin gücüyle yeni bir çağ açtılar.');
+                      } else {
+                        // Dinamik hikayeler
+                        var story = stories[index - 9];
+                        return FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(story['userId'])
+                              .get(),
+                          builder: (context, userSnapshot) {
+                            if (userSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (!userSnapshot.hasData ||
+                                userSnapshot.data == null ||
+                                !userSnapshot.data!.exists) {
+                              return const Icon(Icons.error);
+                            }
+                            var userData = userSnapshot.data!;
+                            var username = userData['username'];
+                            return _buildStoryTile(
+                              context,
+                              story['title'],
+                              story['image'],
+                              username, // userId yerine username'i kullan
+                              story['content'],
+                            );
+                          },
+                        );
+                      }
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -179,13 +243,19 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStoryTile(BuildContext context, String title, String imagePath) {
+  Widget _buildStoryTile(BuildContext context, String title, String imagePath,
+      String author, String content) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => StoryDetailScreen(title: title),
+            builder: (context) => StoryDetailScreen(
+                title: title,
+                imagePath: imagePath,
+                author: author,
+                content: content,
+                isAdmin: author == 'Admin'),
           ),
         );
       },
@@ -206,7 +276,9 @@ class HomeScreen extends StatelessWidget {
                 width: 1,
               ),
               image: DecorationImage(
-                image: AssetImage(imagePath),
+                image: imagePath.startsWith('assets/')
+                    ? AssetImage(imagePath)
+                    : NetworkImage(imagePath) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),

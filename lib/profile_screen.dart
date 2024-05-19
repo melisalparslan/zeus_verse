@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_profile_screen.dart';
+import 'create_story_screen.dart';
+import 'edit_story_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -38,6 +40,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Stream<QuerySnapshot> _getUserStories() {
+    return _firestore
+        .collection('stories')
+        .where('userId', isEqualTo: user!.uid)
+        .snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,223 +81,279 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Color.fromRGBO(13, 64, 93, 1),
-                    Color.fromRGBO(0, 0, 0, 1),
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Color.fromRGBO(13, 64, 93, 1),
+                  Color.fromRGBO(0, 0, 0, 1),
+                ],
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: 20),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage(photoUrl),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      username,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Sahitya',
+                        fontSize: 36,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      bio,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color.fromRGBO(251, 251, 251, 1),
+                        fontFamily: 'Sahitya',
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              '465',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Sahitya',
+                                fontSize: 36,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              'Okunan Hikaye',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromRGBO(148, 148, 148, 1),
+                                fontFamily: 'Sahitya',
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              '8.7/10',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Sahitya',
+                                fontSize: 36,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              'Yazar Puanı',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromRGBO(148, 148, 148, 1),
+                                fontFamily: 'Sahitya',
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              '1.2k',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Sahitya',
+                                fontSize: 36,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              'Beğeniler',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromRGBO(148, 148, 148, 1),
+                                fontFamily: 'Sahitya',
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white,
+                            thickness: 1,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'FAVORİ KONULARIM',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Righteous',
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white,
+                            thickness: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 20,
+                      children: [
+                        _buildImageContainer('Flutter',
+                            'assets/images/What_is_flutter_f648a606af1.png'),
+                        _buildImageContainer('Dart',
+                            'assets/images/Comoinstalarodarteexecutarseuprimeiroexemplo1.png'),
+                        _buildImageContainer(
+                            'Golang', 'assets/images/Images1.png'),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white,
+                            thickness: 1,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'HİKAYELERİM',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Righteous',
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            color: Colors.white,
+                            thickness: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _getUserStories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Text(
+                            'Henüz hikaye oluşturulmamış.',
+                            style: TextStyle(color: Colors.white),
+                          );
+                        }
+                        return Wrap(
+                          spacing: 20,
+                          runSpacing: 20,
+                          children: snapshot.data!.docs.map((doc) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditStoryScreen(
+                                      storyId: doc.id,
+                                      initialTitle: doc['title'],
+                                      initialContent: doc['content'],
+                                      initialImagePath: doc['image'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: _buildImageContainer(
+                                doc['title'],
+                                doc['image'],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 60),
                   ],
                 ),
               ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(height: 20),
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage(photoUrl),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        username,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Sahitya',
-                          fontSize: 36,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        bio,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color.fromRGBO(251, 251, 251, 1),
-                          fontFamily: 'Sahitya',
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                '465',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              Text(
-                                'Okunan Hikaye',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromRGBO(148, 148, 148, 1),
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                '8.7/10',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              Text(
-                                'Yazar Puanı',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromRGBO(148, 148, 148, 1),
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                '1.2k',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              Text(
-                                'Beğeniler',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromRGBO(148, 148, 148, 1),
-                                  fontFamily: 'Sahitya',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.white,
-                              thickness: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              'FAVORİ KONULARIM',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Righteous',
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.white,
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: [
-                          _buildImageContainer('Flutter',
-                              'assets/images/What_is_flutter_f648a606af1.png'),
-                          _buildImageContainer('Dart',
-                              'assets/images/Comoinstalarodarteexecutarseuprimeiroexemplo1.png'),
-                          _buildImageContainer(
-                              'Golang', 'assets/images/Images1.png'),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.white,
-                              thickness: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              'HİKAYELERİM',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Righteous',
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.white,
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: [
-                          _buildImageContainer('OpenAI 101',
-                              'assets/images/_8e73d004f4d44282971ce786216853f31.png'),
-                          _buildImageContainer(
-                              'Bard 101', 'assets/images/Googlebard1.png'),
-                          _buildImageContainer('Yapay Zeka 101',
-                              'assets/images/Yapayzekanedir1.png'),
-                        ],
-                      ),
-                    ],
-                  ),
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 16,
+            right: 16,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CreateStoryScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 15,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              child: const Text('Hikaye Oluştur'),
             ),
           ),
         ],
@@ -308,7 +373,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
               image: DecorationImage(
-                image: AssetImage(imagePath),
+                image: imagePath.startsWith('assets/')
+                    ? AssetImage(imagePath)
+                    : NetworkImage(imagePath) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
