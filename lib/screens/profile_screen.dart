@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_profile_screen.dart';
 import 'create_story_screen.dart';
 import 'edit_story_screen.dart';
+import 'story_detail_screen.dart'; // StoryDetailScreen'i içe aktar
+import '../services/favorite_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     user = _auth.currentUser;
     _loadUserData();
+    _checkFavorites();
   }
 
   Future<void> _loadUserData() async {
@@ -45,6 +48,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .collection('stories')
         .where('userId', isEqualTo: user!.uid)
         .snapshots();
+  }
+
+  Stream<QuerySnapshot> _getFavoriteStories() {
+    return _firestore
+        .collection('users')
+        .doc(user!.uid)
+        .collection('favorites')
+        .snapshots();
+  }
+
+  Future<void> _checkFavorites() async {
+    if (user != null) {
+      QuerySnapshot favoriteStories = await _firestore
+          .collection('users')
+          .doc(user!.uid)
+          .collection('favorites')
+          .get();
+
+      for (var doc in favoriteStories.docs) {
+        String storyId = doc.id;
+        DocumentSnapshot storySnapshot =
+            await _firestore.collection('stories').doc(storyId).get();
+
+        if (!storySnapshot.exists) {
+          await FavoriteService.removeFavorite(storyId);
+        }
+      }
+    }
   }
 
   @override
@@ -136,17 +167,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 20),
                     _buildDivider('FAVORİ KONULARIM'),
                     const SizedBox(height: 20),
-                    Wrap(
-                      spacing: 20,
-                      runSpacing: 20,
-                      children: [
-                        _buildImageContainer('Flutter',
-                            'assets/images/What_is_flutter_f648a606af1.png'),
-                        _buildImageContainer('Dart',
-                            'assets/images/Comoinstalarodarteexecutarseuprimeiroexemplo1.png'),
-                        _buildImageContainer(
-                            'Golang', 'assets/images/Images1.png'),
-                      ],
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _getFavoriteStories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Text(
+                            'Henüz favori hikaye yok.',
+                            style: TextStyle(color: Colors.white),
+                          );
+                        }
+                        return Wrap(
+                          spacing: 20,
+                          runSpacing: 20,
+                          children: snapshot.data!.docs.map((doc) {
+                            var data = doc.data() as Map<String, dynamic>;
+                            return _buildFavoriteStoryTile(
+                              context,
+                              doc.id, // storyId
+                              data['title'],
+                              data['imagePath'],
+                              data['author'],
+                              data['content'],
+                              data['subject'],
+                            );
+                          }).toList(),
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                     _buildDivider('HİKAYELERİM'),
@@ -229,6 +279,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFavoriteStoryTile(
+    BuildContext context,
+    String storyId,
+    String title,
+    String imagePath,
+    String author,
+    String content,
+    String subject,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoryDetailScreen(
+              storyId: storyId,
+              title: title,
+              subject: subject,
+              imagePath: imagePath,
+              author: author,
+              content: content,
+              isAdmin: author == 'Admin',
+            ),
+          ),
+        );
+      },
+      child: _buildImageContainer(title, imagePath),
     );
   }
 

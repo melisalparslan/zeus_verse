@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart'; // ApiService'i içe aktar
+import '../services/favorite_service.dart'; // FavoriteService'i içe aktar
 
 class StoryDetailScreen extends StatefulWidget {
+  final String storyId;
   final String title;
   final String subject;
   final String imagePath;
@@ -11,6 +13,7 @@ class StoryDetailScreen extends StatefulWidget {
 
   const StoryDetailScreen({
     super.key,
+    required this.storyId,
     required this.title,
     required this.subject,
     required this.imagePath,
@@ -28,6 +31,37 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   Future<String>? _testQuestionFuture;
   final TextEditingController _testAnswerController = TextEditingController();
   String _testAnswerResult = '';
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfFavorite();
+  }
+
+  void _checkIfFavorite() async {
+    final isFavorite = await FavoriteService.isFavorite(widget.storyId);
+    setState(() {
+      _isFavorite = isFavorite;
+    });
+  }
+
+  void _toggleFavorite() async {
+    await FavoriteService.toggleFavorite(
+      storyId: widget.storyId,
+      title: widget.title,
+      subject: widget.subject,
+      imagePath: widget.imagePath,
+      author: widget.author,
+      content: widget.content,
+      isAdmin: widget.isAdmin,
+      isFavorite: _isFavorite,
+    );
+
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+  }
 
   void _askQuestion() {
     final questionController = TextEditingController();
@@ -237,6 +271,15 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         ),
         backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              _isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white,
+            ),
+            onPressed: _toggleFavorite,
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,

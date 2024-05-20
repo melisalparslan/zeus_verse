@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'profile_screen.dart';
 import 'story_detail_screen.dart';
-import '../data/admin_contents.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -234,47 +233,29 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
-            itemCount: stories.length + adminContents.length,
+            itemCount: stories.length,
             itemBuilder: (context, index) {
-              if (index < adminContents.length) {
-                // Sabit hikayeler
-                var titles = [
-                  'Biyoinformatik',
-                  'Flutter',
-                  'Nanoteknoloji',
-                  'Unity',
-                  'C#',
-                  'Uzay Kolonizasyonu',
-                  'Genetik',
-                  'Kuantum Fiziği',
-                  'Javascript',
-                ];
-                var images = [
-                  'assets/images/21e5d95d540947a69e18bbc20ab0bedf1.png',
-                  'assets/images/0d533685c3b64bdf94dd74b5c8fe4d051.png',
-                  'assets/images/6b30182b20f144399d46ca377ff609411.png',
-                  'assets/images/A3dae15046ed450d9ddaaaaf46eb5faf1.png',
-                  'assets/images/9a47f3b6473b45fca35a13fa376e47871.png',
-                  'assets/images/Fa969a35a75545618150d3c84cadc2e31.png',
-                  'assets/images/Fa2b95f37f0a4509bbbd87addd5d08cc1.png',
-                  'assets/images/61371cb1497a45b0b17b4a5d93af59e41.png',
-                  'assets/images/410b2c9d7fe04cda9534eec2c0650dc81.png',
-                ];
+              var storyDoc = stories[index];
+              var story = storyDoc.data() as Map<String, dynamic>;
+
+              var userId = story['userId'];
+              if (userId == null || userId == 'Admin') {
+                // Admin'e ait hikaye
                 return _buildStoryTile(
                   context,
-                  titles[index],
-                  images[index],
+                  storyDoc.id,
+                  story['title'],
+                  story['image'],
                   'Admin',
-                  adminContents[index],
-                  adminSubjects[index],
+                  story['content'],
+                  story['subject'],
                 );
               } else {
-                // Dinamik hikayeler
-                var story = stories[index - adminContents.length];
+                // Kullanıcıya ait hikaye
                 return FutureBuilder<DocumentSnapshot>(
                   future: FirebaseFirestore.instance
                       .collection('users')
-                      .doc(story['userId'])
+                      .doc(userId)
                       .get(),
                   builder: (context, userSnapshot) {
                     if (userSnapshot.connectionState ==
@@ -288,10 +269,12 @@ class HomeScreen extends StatelessWidget {
                         !userSnapshot.data!.exists) {
                       return const Icon(Icons.error);
                     }
-                    var userData = userSnapshot.data!;
+                    var userData =
+                        userSnapshot.data!.data() as Map<String, dynamic>;
                     var username = userData['username'];
                     return _buildStoryTile(
                       context,
+                      storyDoc.id,
                       story['title'],
                       story['image'],
                       username,
@@ -308,14 +291,15 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStoryTile(BuildContext context, String title, String imagePath,
-      String author, String content, String subject) {
+  Widget _buildStoryTile(BuildContext context, String storyId, String title,
+      String imagePath, String author, String content, String subject) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => StoryDetailScreen(
+              storyId: storyId,
               title: title,
               subject: subject,
               imagePath: imagePath,
