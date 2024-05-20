@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'edit_profile_screen.dart';
 import 'create_story_screen.dart';
 import 'edit_story_screen.dart';
-import 'story_detail_screen.dart'; // StoryDetailScreen'i içe aktar
+import 'story_detail_screen.dart';
 import '../services/favorite_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -100,13 +101,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EditProfileScreen(
-                          username: username,
-                          bio: bio,
-                          photoUrl: photoUrl,
-                          onSave:
-                              _loadUserData, // Save işleminden sonra verileri yenile
-                        )),
+                  builder: (context) => EditProfileScreen(
+                    username: username,
+                    bio: bio,
+                    photoUrl: photoUrl,
+                    onSave: _loadUserData,
+                  ),
+                ),
               );
             },
           ),
@@ -137,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       radius: 50,
                       backgroundImage: photoUrl.startsWith('assets/')
                           ? AssetImage(photoUrl)
-                          : NetworkImage(photoUrl) as ImageProvider,
+                          : CachedNetworkImageProvider(photoUrl),
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -234,9 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
                               },
                               child: _buildImageContainer(
-                                doc['title'],
-                                doc['image'],
-                              ),
+                                  doc['title'], doc['image']),
                             );
                           }).toList(),
                         );
@@ -262,10 +261,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromRGBO(41, 182, 246, 1),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 15,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -333,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               image: DecorationImage(
                 image: imagePath.startsWith('assets/')
                     ? AssetImage(imagePath)
-                    : NetworkImage(imagePath) as ImageProvider,
+                    : CachedNetworkImageProvider(imagePath),
                 fit: BoxFit.cover,
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart'; // ApiService'i içe aktar
-import '../services/favorite_service.dart'; // FavoriteService'i içe aktar
+import 'package:cached_network_image/cached_network_image.dart';
+import '../services/api_service.dart';
+import '../services/favorite_service.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final String storyId;
@@ -307,7 +308,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   image: DecorationImage(
                     image: widget.imagePath.startsWith('assets/')
                         ? AssetImage(widget.imagePath)
-                        : NetworkImage(widget.imagePath) as ImageProvider,
+                        : CachedNetworkImageProvider(widget.imagePath),
                     fit: BoxFit.cover,
                   ),
                 ),

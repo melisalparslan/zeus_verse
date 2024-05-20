@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'profile_screen.dart';
 import 'story_detail_screen.dart';
 
@@ -84,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                   radius: 21,
                   backgroundImage: photoUrl.startsWith('assets/')
                       ? AssetImage(photoUrl)
-                      : NetworkImage(photoUrl) as ImageProvider,
+                      : CachedNetworkImageProvider(photoUrl),
                 ),
               );
             },
@@ -209,7 +210,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildStoryGrid(BuildContext context) {
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 360,
+      top: MediaQuery.of(context).padding.top + 320,
       left: 18,
       right: 18,
       bottom: 18,
@@ -329,7 +330,7 @@ class HomeScreen extends StatelessWidget {
               image: DecorationImage(
                 image: imagePath.startsWith('assets/')
                     ? AssetImage(imagePath)
-                    : NetworkImage(imagePath) as ImageProvider,
+                    : CachedNetworkImageProvider(imagePath) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
