@@ -132,8 +132,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   onPressed: () {
                     final question = questionController.text;
                     setState(() {
-                      _answerFuture =
-                          ApiService.getAnswer(question, widget.content);
+                      _answerFuture = ApiService.getAnswer(
+                          question, widget.content, widget.author);
                     });
                   },
                 ),

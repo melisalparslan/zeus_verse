@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const apiKey = 'AIzaSyAQBSeCPXoPaqReosNa69t6M3cRGtTU-gU';
 
-  static Future<String> getAnswer(String question, String storyContent) async {
+  static Future<String> getAnswer(
+      String question, String storyContent, String author) async {
     if (apiKey.isEmpty) {
       return 'API_KEY not found';
     }
@@ -16,7 +17,7 @@ class ApiService {
       'contents': [
         {
           'parts': [
-            {'text': 'Soru: $question \nHikaye: $storyContent'}
+            {'text': 'Soru: $question \nHikaye: $storyContent \nYazar: $author'}
           ]
         }
       ]
